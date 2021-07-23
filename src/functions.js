@@ -10,9 +10,9 @@ async function getGlossaryTermDescription (options) {
   const response = await axios({ 
     url: glossaryBaseUrl + '/v1/item/text?term=' + term + '&bot=' + glossaryProfileName, 
     method: 'get',     
-  }).catch((error) => { throw createError(500, error.message) })
-  console.log('getlinks - response.data:', response.data)
-  return response.status !== 200 ? null : response.data.text
+  }).catch((error) => { console.log(error.message) })
+  if (response) { console.log('getlinks - response.data:', response.data) }
+  return response && response.status === 200 ? response.data.text : null
 }
 
 /**
@@ -49,7 +49,7 @@ async function ContinueConversation (options) {
   if (term) {
     const description = await getGlossaryTermDescription({ term } )
     if (description !== null) {
-      await kikoBotService.sendMessage('Ok. Hier die Beschreibung dazu. ' + description, true)  // end of conversation! 
+      await kikoBotService.sendMessage('Ok. Hier die Beschreibung dazu. ' + description + ' --- Was kann ich sonst noch für Dich tun?', true)  // end of conversation! 
     } else {
       await kikoBotService.sendMessage('Hm. Dazu habe ich leider keine Beschreibung gefunden. Bitte gib einen anderen Begriff ein.', false) // no end of conv.
     }
